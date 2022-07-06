@@ -1,0 +1,116 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API",
+        "version": "1.0.0",
+        "description": "This is a definition of AWS Gateway API for an API triggering Lambdas."
+    },
+    "servers": [
+        {
+            "url": "https://api.exemple.tf",
+            "x-amazon-apigateway-endpoint-configuration": {
+                "disableExecuteApiEndpoint": true
+            }
+        }
+    ],
+    "tags": [
+        {
+            "name": "First",
+            "description": "Endpoints for operations"
+        }
+    ],
+    "paths": {
+        "/first": {
+            "post": {
+                "tags": [
+                    "First"
+                ],
+                "summary": "First endpoint",
+                "responses": {
+                    "400": {
+                        "description": "400 response",
+                        "content": {}
+                    },
+                    "200": {
+                        "description": "200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OutputObject"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InputVaubanUser"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:{aws_region}:lambda:path/2015-03-31/functions/arn:aws:lambda:{aws_region}:{aws_account}:function:{aws_lambda_name}/invocations",
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy",
+                    "payloadFormatVersion": "2.0",
+                    "credentials": "arn:aws:iam::{aws_account}:role/api_gateway_lambda"
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "OutputObject": {
+                "type": "object"
+            },
+            "InputVaubanUser": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "creation",
+                            "reload",
+                            "status"
+                        ]
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "name": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "unauthorized",
+                            "payment issue",
+                            "too many requests"
+                        ]
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "x-api-key"
+            }
+        }
+    },
+    "security": [
+        {
+            "ApiKeyAuth": []
+        }
+    ]
+}
